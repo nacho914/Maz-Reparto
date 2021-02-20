@@ -1,26 +1,20 @@
 package com.example.mazreparto;
 
 public class list_element {
-    public String Color;
     public String Titulo;
-    public String Hora;
     public String Dinero;
     public String PedidoKey;
+    public String TrabajadorKey;
+    public long TiempoActualPedido;
+    public int tiempoPedido;
 
-    public list_element(String color, String titulo, String pedidoKey,String dinero,String hora) {
-        Color = color;
+    public list_element(String titulo, String pedidoKey,String dinero, String sKeyTrabajador,long lTiempoPedido,int iTiempo) {
         Titulo = titulo;
         PedidoKey = pedidoKey;
         Dinero=dinero;
-        Hora=hora;
-    }
-
-    public String getColor() {
-        return Color;
-    }
-
-    public void setColor(String color) {
-        Color = color;
+        TrabajadorKey=sKeyTrabajador;
+        TiempoActualPedido=lTiempoPedido;
+        tiempoPedido=iTiempo;
     }
 
     public String getTitulo() {
@@ -39,14 +33,6 @@ public class list_element {
         PedidoKey = pedidoKey;
     }
 
-    public String getHora() {
-        return Hora;
-    }
-
-    public void setHora(String hora) {
-        Hora = hora;
-    }
-
     public String getDinero() {
         return Dinero;
     }
@@ -54,4 +40,29 @@ public class list_element {
     public void setDinero(String dinero) {
         Dinero = dinero;
     }
+
+    public String getTrabajadorKey() {
+        return TrabajadorKey;
+    }
+
+    public void setTrabajadorKey(String trabajadorKey) {
+        TrabajadorKey = trabajadorKey;
+    }
+
+    public long getTiempoActualPedido() {
+        return TiempoActualPedido;
+    }
+
+    public void setTiempoActualPedido(long timeRaw) {
+        this.TiempoActualPedido = timeRaw;
+    }
+
+    public int getTiempoPedido() {
+        return tiempoPedido;
+    }
+
+    public void setTiempoPedido(int tiempoPedido) {
+        this.tiempoPedido = tiempoPedido;
+    }
+
 }

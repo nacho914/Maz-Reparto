@@ -3,6 +3,7 @@ package com.example.mazreparto;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
@@ -22,10 +23,16 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "Nono";
+    public  String keyTrabajador;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        keyTrabajador = getIntent().getStringExtra("KeyTrabajador");
+
+        //mostrarDialogo("nana",keyTrabajador);
 
     }
 
@@ -69,6 +76,7 @@ public class MainActivity extends AppCompatActivity {
     public void enviarLista(View view)
     {
         Intent intent = new Intent(this, MainActivity_List.class);
+        intent.putExtra("KeyTrabajador", keyTrabajador);
         startActivity(intent);
     }
 
@@ -78,5 +86,18 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, MainActivityLogin.class);
         startActivity(intent);
 
+    }
+
+    public  void mostrarDialogo(String sTitulo, String sMensaje)
+    {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(sTitulo);
+        builder.setMessage(sMensaje);
+        //builder.setPositiveButton("OK", null);
+        builder.setNeutralButton("Entendido",null);
+        builder.setInverseBackgroundForced(true);
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 }

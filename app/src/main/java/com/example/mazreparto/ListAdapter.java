@@ -2,6 +2,8 @@ package com.example.mazreparto;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +12,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder>
@@ -40,6 +46,39 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder>
     public void onBindViewHolder(@org.jetbrains.annotations.NotNull final ListAdapter.ViewHolder holder, final int position)
     {
         holder.binData(mData.get(position));
+        Date currentTime = Calendar.getInstance().getTime();
+
+
+        long lTimeMore = ((holder.iTiempoPedido*60)*1000);
+        if (holder.timer != null) {
+            holder.timer.cancel();
+        }
+        long timer =(holder.lHoraPedido+lTimeMore)-currentTime.getTime();
+
+        //timer = timer*1000;
+
+        if(timer>0) {
+            holder.timer = new CountDownTimer(timer, 1000) {
+                public void onTick(long millisUntilFinished) {
+
+                    int iSegundos= (int) (millisUntilFinished/1000);
+                    int hours = iSegundos / 3600;
+                    int minutes = (iSegundos % 3600) / 60;
+                    int seconds = iSegundos % 60;
+
+                    holder.hora.setText("Listo en: \n"+String.format("%02d:%02d:%02d", hours, minutes, seconds));
+
+                }
+
+                public void onFinish() {
+                    holder.hora.setText("AHORA");
+                }
+            }.start();
+        }
+        else
+        {
+            holder.hora.setText("AHORA");
+        }
     }
 
     public void setItems(List<list_element> items)
@@ -50,6 +89,9 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder>
         TextView titulo;
         TextView dinero;
         TextView hora;
+        int iTiempoPedido;
+        long lHoraPedido;
+        CountDownTimer timer;
 
         ViewHolder(View itemView)
         {
@@ -64,17 +106,23 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder>
         {
             titulo.setText(item.getTitulo());
             dinero.setText(item.getDinero());
-            hora.setText(item.getHora());
+            hora.setText("");
+            iTiempoPedido=item.tiempoPedido;
+            lHoraPedido=item.TiempoActualPedido;
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Intent intent= new Intent(context, MainActivity_pedido.class);
-                    intent.putExtra("keyPedido", item.PedidoKey);
+                    Bundle extras = new Bundle();
+                    extras.putString("keyPedido",item.PedidoKey);
+                    extras.putString("keyTrabajador",item.TrabajadorKey);
+                    intent.putExtras(extras);
                     context.startActivity(intent);
                 }
             });
         }
+
     }
 
 

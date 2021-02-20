@@ -38,6 +38,7 @@ import Modelos.Pedidos;
 public class MainActivity_List extends AppCompatActivity {
 
     List<list_element> elements;
+    String keyTrabajador;
     final FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference ref = database.getReference("Pedidos");
     private ProgressDialog progressDialog;
@@ -54,9 +55,12 @@ public class MainActivity_List extends AppCompatActivity {
         progressDialog.setMessage("Verificando Datos");
         progressDialog.show();
 
+        keyTrabajador = getIntent().getStringExtra("KeyTrabajador");
+
         cargarSpinner();
 
     }
+
 
     public void cargarSpinner()
     {
@@ -72,10 +76,10 @@ public class MainActivity_List extends AppCompatActivity {
 
                 switch (position) {
                     case 0:
-                        cargarDatos();
+                        cargarDatosActivos();
                         break;
                     case 1:
-                        cargarDatosActivos();
+                        cargarDatosRepartidor();
                         break;
                     case 2:
                         Toast.makeText(parent.getContext(), "Spinner item 3!", Toast.LENGTH_SHORT).show();
@@ -87,40 +91,6 @@ public class MainActivity_List extends AppCompatActivity {
             public void onNothingSelected(AdapterView<?> parent) {
 
                 // sometimes you need nothing here
-            }
-        });
-    }
-
-
-    public void cargarDatos()
-    {
-        ref.addValueEventListener(new ValueEventListener() {
-            @RequiresApi(api = Build.VERSION_CODES.O)
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-
-                elements = new ArrayList<>();
-
-                for (DataSnapshot PedidoSnapshot: dataSnapshot.getChildren()) {
-                    Pedidos pedido = PedidoSnapshot.getValue(Pedidos.class);
-
-                    LocalDateTime triggerTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(pedido.getTimestampCreatedLong()),
-                            TimeZone.getDefault().toZoneId()).plusMinutes(pedido.TiempoPedido);
-
-                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-                    String formatDateTime = triggerTime.format(formatter);
-
-                    elements.add(new list_element("negro", pedido.NombreNegocio,PedidoSnapshot.getKey(),"$ "+String.valueOf(pedido.Precio),formatDateTime));
-                }
-                cargarDatosLista();
-                progressDialog.dismiss();
-
-            }
-            @Override
-            public void onCancelled(DatabaseError error) {
-                // Failed to read value
-                progressDialog.dismiss();
-                Log.w("TAG", "Failed to read value.", error.toException());
             }
         });
     }
@@ -140,13 +110,13 @@ public class MainActivity_List extends AppCompatActivity {
 
                     if(pedido.TrabajadorKey.isEmpty()) {
 
-                        LocalDateTime triggerTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(pedido.getTimestampCreatedLong()),
+                        /*LocalDateTime triggerTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(pedido.getTimestampCreatedLong()),
                                 TimeZone.getDefault().toZoneId()).plusMinutes(pedido.TiempoPedido);
 
                         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-                        String formatDateTime = triggerTime.format(formatter);
+                        String formatDateTime = triggerTime.format(formatter);*/
 
-                        elements.add(new list_element("negro", pedido.NombreNegocio, PedidoSnapshot.getKey(), "$ " + String.valueOf(pedido.Precio), formatDateTime));
+                        elements.add(new list_element(pedido.NombreNegocio, PedidoSnapshot.getKey(), "$ " + String.valueOf(pedido.Precio),keyTrabajador,pedido.getTimestampCreatedLong(),pedido.TiempoPedido));
                     }
                 }
                 cargarDatosLista();
@@ -161,6 +131,44 @@ public class MainActivity_List extends AppCompatActivity {
             }
         });
     }
+
+
+    public void cargarDatosRepartidor()
+    {
+        ref.addValueEventListener(new ValueEventListener() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                elements = new ArrayList<>();
+
+                for (DataSnapshot PedidoSnapshot: dataSnapshot.getChildren()) {
+                    Pedidos pedido = PedidoSnapshot.getValue(Pedidos.class);
+
+                    if(pedido.TrabajadorKey.equals(keyTrabajador)) {
+                        /*LocalDateTime triggerTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(pedido.getTimestampCreatedLong()),
+                                TimeZone.getDefault().toZoneId()).plusMinutes(pedido.TiempoPedido);
+
+                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+                        String formatDateTime = triggerTime.format(formatter);*/
+
+                        elements.add(new list_element(pedido.NombreNegocio, PedidoSnapshot.getKey(), "$ " + String.valueOf(pedido.Precio), keyTrabajador,pedido.getTimestampCreatedLong(),pedido.TiempoPedido));
+                    }
+                }
+                cargarDatosLista();
+                progressDialog.dismiss();
+
+            }
+            @Override
+            public void onCancelled(DatabaseError error) {
+                // Failed to read value
+                progressDialog.dismiss();
+                Log.w("TAG", "Failed to read value.", error.toException());
+            }
+        });
+    }
+
+
 
     public void cargarDatosLista()
     {

@@ -68,11 +68,19 @@ public class MainActivityLogin extends AppCompatActivity {
     public void onStart() {
         super.onStart();
         // Check if user is signed in (non-null) and update UI accordingly.
+        progressDialog.setTitle("Maz Reparto");
+        progressDialog.setMessage("Verificando Datos");
+        progressDialog.show();
+
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if(currentUser != null){
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
+            obtenerKeyTrabajador(currentUser.getEmail());
         }
+        else
+        {
+            progressDialog.dismiss();
+        }
+
     }
 
     public void LoginUser(View view)
@@ -146,6 +154,38 @@ public class MainActivityLogin extends AppCompatActivity {
         });
     }
 
+
+    public  void obtenerKeyTrabajador(String sCorreo)
+    {
+
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                progressDialog.dismiss();
+                for (DataSnapshot UsuarioSnapshot: dataSnapshot.getChildren()) {
+
+                    Usuarios user = UsuarioSnapshot.getValue(Usuarios.class);
+
+                    if(user.Correo.equals(sCorreo) && user.IdTipoUsuario==0)
+                    {
+                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                        intent.putExtra("KeyTrabajador", UsuarioSnapshot.getKey());
+                        startActivity(intent);
+                        break;
+                    }
+                }
+
+            }
+            @Override
+            public void onCancelled(DatabaseError error) {
+                progressDialog.dismiss();
+                mostrarDialogo("Autenticación","Ocurrio el siguiente problema: "+error.toException());
+                FirebaseAuth.getInstance().signOut();
+            }
+        });
+    }
+
     public void actualizarKeyCelular(String key)
     {
         FirebaseMessaging.getInstance().getToken().addOnCompleteListener(new OnCompleteListener<String>() {
@@ -161,14 +201,14 @@ public class MainActivityLogin extends AppCompatActivity {
                 // Get new FCM registration token
                 String token = task.getResult();
                 ref.child(key).child("keyNotificaciones").setValue(token);
-                suscribirNotificaciones();
+                suscribirNotificaciones(key);
 
             }
         });
 
     }
 
-    public void suscribirNotificaciones()
+    public void suscribirNotificaciones(String key)
     {
         FirebaseMessaging.getInstance().subscribeToTopic("NotificacionesPedidos").addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
@@ -180,6 +220,7 @@ public class MainActivityLogin extends AppCompatActivity {
 
                 progressDialog.dismiss();
                 Intent intent = new Intent(MainActivityLogin.this, MainActivity.class);
+                intent.putExtra("KeyTrabajador", key);
                 startActivity(intent);
             }
         });;

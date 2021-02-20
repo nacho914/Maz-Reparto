@@ -37,6 +37,7 @@ import static java.sql.Types.TIMESTAMP;
 public class MainActivity_pedido extends AppCompatActivity {
 
     String key;
+    String keyTrabajador;
     TextView mKey;
     TextView mNombreNego;
     TextView mNombreCliente;
@@ -55,7 +56,10 @@ public class MainActivity_pedido extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_pedido);
 
-        key = getIntent().getStringExtra("keyPedido");
+        Bundle extras = getIntent().getExtras();
+        key = extras.getString("keyPedido");
+        keyTrabajador = extras.getString("keyTrabajador");
+
         mNombreNego=(TextView)findViewById(R.id.mNombreNegocio);
         mNombreCliente=(TextView)findViewById(R.id.mNombreCliente);
         mDireccion=(TextView)findViewById(R.id.mDirección);
@@ -63,6 +67,7 @@ public class MainActivity_pedido extends AppCompatActivity {
         mTelefono=(TextView)findViewById(R.id.mTelefono);
         mTiempo=(TextView)findViewById(R.id.mTiempo);
         mActualiza=(Button)findViewById(R.id.mBtnApartarPedido);
+
         progressDialog = new ProgressDialog(this);
         progressDialog.setTitle("Maz Reparto");
         progressDialog.setMessage("Verificando Datos");
@@ -101,7 +106,7 @@ public class MainActivity_pedido extends AppCompatActivity {
     public void apartarPedido(View view)
     {
 
-        ref.child(key).child("TrabajadorKey").setValue("nana");
+        ref.child(key).child("TrabajadorKey").setValue(keyTrabajador);
         Toast toast = Toast.makeText(getApplicationContext(),ServerValue.TIMESTAMP.toString(),Toast.LENGTH_LONG);
         toast.setGravity(Gravity.CENTER, 0, 0);
         toast.show();
