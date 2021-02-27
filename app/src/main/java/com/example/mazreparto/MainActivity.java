@@ -1,29 +1,33 @@
 package com.example.mazreparto;
 
+import android.app.ProgressDialog;
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.AlertDialog;
-import android.content.Intent;
-import android.location.Address;
-import android.location.Geocoder;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-import android.widget.Toast;
-
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
-import java.io.IOException;
-import java.util.List;
+import Modelos.Pedidos;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String TAG = "Nono";
     public  String keyTrabajador;
+    public TextView mPedidos;
+    public TextView mCantidadPedidosFin;
+    int iTotales=0;
+    private ProgressDialog progressDialog;
+
+    final FirebaseDatabase database = FirebaseDatabase.getInstance();
+    DatabaseReference ref = database.getReference("Pedidos");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,46 +36,18 @@ public class MainActivity extends AppCompatActivity {
 
         keyTrabajador = getIntent().getStringExtra("KeyTrabajador");
 
-        //mostrarDialogo("nana",keyTrabajador);
+
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setTitle("Maz Reparto");
+        progressDialog.setMessage("Cargando Datos");
+        progressDialog.show();
+
+        mPedidos=findViewById(R.id.mCantidadPedidos);
+        mCantidadPedidosFin= findViewById(R.id.mCantidadPedidosFin);
+        CargaTotales();
 
     }
 
-    public void llamarActividad(View view) throws IOException {
-        FirebaseMessaging.getInstance().getToken().addOnCompleteListener(new OnCompleteListener<String>() {
-        @Override
-        public void onComplete(@NonNull Task<String> task) {
-            if (!task.isSuccessful()) {
-                Log.w(TAG, "Fetching FCM registration token failed", task.getException());
-                return;
-            }
-
-            // Get new FCM registration token
-            String token = task.getResult();
-
-            // Log and toast
-            //String msg = getString(R.string.msg_token_fmt, token);
-            Log.d(TAG, token);
-            Toast.makeText(MainActivity.this, token, Toast.LENGTH_SHORT).show();
-        }
-    });
-
-        /*double latitude=0;
-        double longitude=0;
-        Geocoder geocoder = new Geocoder(this);
-        List<Address> addresses;
-        addresses = geocoder.getFromLocationName("Luis Donaldo Colosio #569 infonavit Jabalies, Mazatlán, Sinaloa, Mexico", 1);
-        if(addresses.size() > 0) {
-             latitude= addresses.get(0).getLatitude();
-             longitude= addresses.get(0).getLongitude();
-        }*/
-
-        //Log.w("nana", "Coordenadas: "+String.valueOf(latitude)+" "+String.valueOf(longitude));
-        //Intent intent = new Intent(this, EjemploActivity2.class);
-        //EditText editText = (EditText) findViewById(R.id.editText);
-        //String message = editText.getText().toString();
-        //intent.putExtra(EXTRA_MESSAGE, message);
-        //startActivity(intent);
-    }
 
     public void enviarLista(View view)
     {
@@ -88,6 +64,72 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    public void CargaTotales()
+    {
+        ref.child("Activos").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+
+                    for (DataSnapshot PedidoSnapshot: dataSnapshot.getChildren()) {
+
+                        Pedidos pedido = PedidoSnapshot.getValue(Pedidos.class);
+
+                        assert pedido != null;
+                        if(pedido.TrabajadorKey.isEmpty() || pedido.TrabajadorKey.equals(keyTrabajador))
+                            iTotales++;
+                    }
+
+                    mPedidos.setText(String.valueOf(iTotales));
+                    iTotales=0;
+
+                }
+                else{
+                    mPedidos.setText("0");
+                }
+                cargarFinalizados();
+                //progressDialog.dismiss();
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                progressDialog.dismiss();
+            }
+        });
+    }
+
+    public void cargarFinalizados()
+    {
+        ref.child("Finalizados").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+
+                    for (DataSnapshot PedidoSnapshot: dataSnapshot.getChildren()) {
+
+                        Pedidos pedido = PedidoSnapshot.getValue(Pedidos.class);
+
+                        assert pedido != null;
+                        if( pedido.TrabajadorKey.equals(keyTrabajador))
+                            iTotales++;
+                    }
+                    mCantidadPedidosFin.setText(String.valueOf(iTotales));
+                    iTotales=0;
+
+                }
+                else{
+                    mCantidadPedidosFin.setText("0");
+                }
+
+                progressDialog.dismiss();
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                progressDialog.dismiss();
+            }
+        });
+    }
+
+    /*
     public  void mostrarDialogo(String sTitulo, String sMensaje)
     {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -99,5 +141,5 @@ public class MainActivity extends AppCompatActivity {
 
         AlertDialog dialog = builder.create();
         dialog.show();
-    }
+    }*/
 }

@@ -38,6 +38,7 @@ import java.util.concurrent.CountDownLatch;
 
 import Modelos.Pedidos;
 import Modelos.Usuarios;
+import Modelos.UsuariosRepartidores;
 
 public class MainActivityLogin extends AppCompatActivity {
 
@@ -48,7 +49,7 @@ public class MainActivityLogin extends AppCompatActivity {
     private FirebaseAuth mAuth;
 
     final FirebaseDatabase database = FirebaseDatabase.getInstance();
-    DatabaseReference ref = database.getReference("Usuarios");
+    DatabaseReference ref = database.getReference("Usuarios/UsuariosRepartidores");
 
 
 
@@ -128,9 +129,9 @@ public class MainActivityLogin extends AppCompatActivity {
                 boolean bCerrarSesion=true;
                 for (DataSnapshot UsuarioSnapshot: dataSnapshot.getChildren()) {
 
-                    Usuarios user = UsuarioSnapshot.getValue(Usuarios.class);
+                    UsuariosRepartidores user = UsuarioSnapshot.getValue(UsuariosRepartidores.class);
 
-                    if(user.Correo.equals(usuario.getText().toString()) && user.IdTipoUsuario==0)
+                    if(user.Correo.equals(usuario.getText().toString()))
                     {
                         actualizarKeyCelular(UsuarioSnapshot.getKey());
                         bCerrarSesion=false;
@@ -165,9 +166,9 @@ public class MainActivityLogin extends AppCompatActivity {
                 progressDialog.dismiss();
                 for (DataSnapshot UsuarioSnapshot: dataSnapshot.getChildren()) {
 
-                    Usuarios user = UsuarioSnapshot.getValue(Usuarios.class);
+                    UsuariosRepartidores user = UsuarioSnapshot.getValue(UsuariosRepartidores.class);
 
-                    if(user.Correo.equals(sCorreo) && user.IdTipoUsuario==0)
+                    if(user.Correo.equals(sCorreo))
                     {
                         Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                         intent.putExtra("KeyTrabajador", UsuarioSnapshot.getKey());

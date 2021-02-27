@@ -65,7 +65,7 @@ public class MainActivity_List extends AppCompatActivity {
     public void cargarSpinner()
     {
         dropdown = findViewById(R.id.spEstatus);
-        String[] items = new String[]{"Activos", "Pendientes", "Finalizados"};
+        String[] items = new String[]{"Activos", "En proceso", "Finalizados"};
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, items);
         dropdown.setAdapter(adapter);
         dropdown.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -82,7 +82,7 @@ public class MainActivity_List extends AppCompatActivity {
                         cargarDatosRepartidor();
                         break;
                     case 2:
-                        Toast.makeText(parent.getContext(), "Spinner item 3!", Toast.LENGTH_SHORT).show();
+                        cargarDatosFinalizados();
                         break;
                 }
             }
@@ -97,7 +97,7 @@ public class MainActivity_List extends AppCompatActivity {
 
     public void cargarDatosActivos()
     {
-        ref.addValueEventListener(new ValueEventListener() {
+        ref.child("Activos").addValueEventListener(new ValueEventListener() {
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -116,7 +116,7 @@ public class MainActivity_List extends AppCompatActivity {
                         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
                         String formatDateTime = triggerTime.format(formatter);*/
 
-                        elements.add(new list_element(pedido.NombreNegocio, PedidoSnapshot.getKey(), "$ " + String.valueOf(pedido.Precio),keyTrabajador,pedido.getTimestampCreatedLong(),pedido.TiempoPedido));
+                        elements.add(new list_element(pedido.NombreNegocio, PedidoSnapshot.getKey(), "$ " + String.valueOf(pedido.Precio),keyTrabajador,pedido.getTimestampCreatedLong(),pedido.TiempoPedido,dropdown.getSelectedItemPosition()));
                     }
                 }
                 cargarDatosLista();
@@ -135,7 +135,7 @@ public class MainActivity_List extends AppCompatActivity {
 
     public void cargarDatosRepartidor()
     {
-        ref.addValueEventListener(new ValueEventListener() {
+        ref.child("Activos").addValueEventListener(new ValueEventListener() {
             @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -146,13 +146,36 @@ public class MainActivity_List extends AppCompatActivity {
                     Pedidos pedido = PedidoSnapshot.getValue(Pedidos.class);
 
                     if(pedido.TrabajadorKey.equals(keyTrabajador)) {
-                        /*LocalDateTime triggerTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(pedido.getTimestampCreatedLong()),
-                                TimeZone.getDefault().toZoneId()).plusMinutes(pedido.TiempoPedido);
+                        elements.add(new list_element(pedido.NombreNegocio, PedidoSnapshot.getKey(), "$ " + String.valueOf(pedido.Precio), keyTrabajador,pedido.getTimestampCreatedLong(),pedido.TiempoPedido, dropdown.getSelectedItemPosition()));
+                    }
+                }
+                cargarDatosLista();
+                progressDialog.dismiss();
 
-                        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-                        String formatDateTime = triggerTime.format(formatter);*/
+            }
+            @Override
+            public void onCancelled(DatabaseError error) {
+                // Failed to read value
+                progressDialog.dismiss();
+                Log.w("TAG", "Failed to read value.", error.toException());
+            }
+        });
+    }
 
-                        elements.add(new list_element(pedido.NombreNegocio, PedidoSnapshot.getKey(), "$ " + String.valueOf(pedido.Precio), keyTrabajador,pedido.getTimestampCreatedLong(),pedido.TiempoPedido));
+    public void cargarDatosFinalizados()
+    {
+        ref.child("Finalizados").addValueEventListener(new ValueEventListener() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+
+                elements = new ArrayList<>();
+
+                for (DataSnapshot PedidoSnapshot: dataSnapshot.getChildren()) {
+                    Pedidos pedido = PedidoSnapshot.getValue(Pedidos.class);
+
+                    if(pedido.TrabajadorKey.equals(keyTrabajador)) {
+                        elements.add(new list_element(pedido.NombreNegocio, PedidoSnapshot.getKey(), "$ " + String.valueOf(pedido.Precio), keyTrabajador,pedido.getTimestampCreatedLong(),pedido.TiempoPedido, dropdown.getSelectedItemPosition()));
                     }
                 }
                 cargarDatosLista();

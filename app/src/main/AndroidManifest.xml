@@ -4,25 +4,21 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/iconrepartidor"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/iconrepartidor"
         android:supportsRtl="true"
         android:theme="@style/Theme.MazReparto">
-        <activity android:name=".MainActivityLogin">
+        <activity android:name=".MainActivity_Splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-            </intent-filter>
-        </activity>
-        <activity android:name=".MainActivity_pedido" />
-        <activity android:name=".MainActivity_List" />
-        <activity android:name=".MainActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".MainActivityLogin" />
+        <activity android:name=".MainActivity_pedido" />
+        <activity android:name=".MainActivity_List" />
+        <activity android:name=".MainActivity"/>
     </application>
 
 </manifest>

@@ -7,14 +7,16 @@ public class list_element {
     public String TrabajadorKey;
     public long TiempoActualPedido;
     public int tiempoPedido;
+    public int tipoPedido;
 
-    public list_element(String titulo, String pedidoKey,String dinero, String sKeyTrabajador,long lTiempoPedido,int iTiempo) {
+    public list_element(String titulo, String pedidoKey,String dinero, String sKeyTrabajador,long lTiempoPedido,int iTiempo, int iTipoPedido) {
         Titulo = titulo;
         PedidoKey = pedidoKey;
         Dinero=dinero;
         TrabajadorKey=sKeyTrabajador;
         TiempoActualPedido=lTiempoPedido;
         tiempoPedido=iTiempo;
+        tipoPedido=iTipoPedido;
     }
 
     public String getTitulo() {
@@ -55,6 +57,14 @@ public class list_element {
 
     public void setTiempoActualPedido(long timeRaw) {
         this.TiempoActualPedido = timeRaw;
+    }
+
+    public int getTipoPedido() {
+        return tipoPedido;
+    }
+
+    public void setTipoPedido(int tipoPedido) {
+        this.tipoPedido = tipoPedido;
     }
 
     public int getTiempoPedido() {

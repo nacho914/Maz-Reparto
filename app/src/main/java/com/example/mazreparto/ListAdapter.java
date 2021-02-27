@@ -117,6 +117,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder>
                     Bundle extras = new Bundle();
                     extras.putString("keyPedido",item.PedidoKey);
                     extras.putString("keyTrabajador",item.TrabajadorKey);
+                    extras.putString("tipoPedido",String.valueOf(item.tipoPedido));
                     intent.putExtras(extras);
                     context.startActivity(intent);
                 }
