@@ -23,7 +23,10 @@ public class MainActivity extends AppCompatActivity {
     public  String keyTrabajador;
     public TextView mPedidos;
     public TextView mCantidadPedidosFin;
+    public TextView mCantidadPedidosProc;
+
     int iTotales=0;
+    int iTotalesProc=0;
     private ProgressDialog progressDialog;
 
     final FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -44,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
 
         mPedidos=findViewById(R.id.mCantidadPedidos);
         mCantidadPedidosFin= findViewById(R.id.mCantidadPedidosFin);
+        mCantidadPedidosProc=findViewById(R.id.mCantidadPedidosProce);
         CargaTotales();
 
     }
@@ -76,11 +80,18 @@ public class MainActivity extends AppCompatActivity {
                         Pedidos pedido = PedidoSnapshot.getValue(Pedidos.class);
 
                         assert pedido != null;
-                        if(pedido.TrabajadorKey.isEmpty() || pedido.TrabajadorKey.equals(keyTrabajador))
-                            iTotales++;
+                        if(pedido.TrabajadorKey.isEmpty() || pedido.TrabajadorKey.equals(keyTrabajador)) {
+
+                            if(pedido.TrabajadorKey.equals(keyTrabajador))
+                                iTotalesProc++;
+                            else
+                                iTotales++;
+                        }
                     }
 
+                    mCantidadPedidosProc.setText(String.valueOf(iTotalesProc));
                     mPedidos.setText(String.valueOf(iTotales));
+                    iTotalesProc=0;
                     iTotales=0;
 
                 }

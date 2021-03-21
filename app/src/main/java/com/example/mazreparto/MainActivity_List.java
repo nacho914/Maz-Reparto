@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -191,7 +192,12 @@ public class MainActivity_List extends AppCompatActivity {
         });
     }
 
-
+    public void regresarPrincipal(View view)
+    {
+        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+        intent.putExtra("KeyTrabajador", keyTrabajador);
+        startActivity(intent);
+    }
 
     public void cargarDatosLista()
     {

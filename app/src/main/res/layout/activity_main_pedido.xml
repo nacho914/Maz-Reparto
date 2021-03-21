@@ -163,16 +163,25 @@
                 android:text="Telefono"
                 android:gravity="center"
                 android:textSize="24sp"
-                android:textStyle="bold"/>
+                android:textStyle="bold"
+                android:textIsSelectable="true"/>
 
 
             <Button
                 android:id="@+id/mBtnApartarPedido"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:onClick="apartarPedido"
-                android:text="Aceptar Pedido"
                 android:layout_marginTop="30dp"
+
+                android:onClick="apartarPedido"
+                android:text="Aceptar Pedido" />
+
+            <Button
+                android:id="@+id/mBtnCancelarPedido"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="cancelarPedido"
+                android:text="Cancelar Pedido"
                 android:layout_marginBottom="40dp"/>
 
 

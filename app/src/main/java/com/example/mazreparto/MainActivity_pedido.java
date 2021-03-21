@@ -40,6 +40,7 @@ public class MainActivity_pedido extends AppCompatActivity {
     TextView mTelefono;
     TextView mTiempo;
     Button mActualiza;
+    Button mCancelar;
     private ProgressDialog progressDialog;
     boolean bEsApartado = false;
     int iTipoPedido;
@@ -65,6 +66,7 @@ public class MainActivity_pedido extends AppCompatActivity {
         mTelefono=findViewById(R.id.mTelefono);
         mTiempo=findViewById(R.id.mTiempo);
         mActualiza=findViewById(R.id.mBtnApartarPedido);
+        mCancelar=findViewById(R.id.mBtnCancelarPedido);
 
         progressDialog = new ProgressDialog(this);
 
@@ -74,6 +76,7 @@ public class MainActivity_pedido extends AppCompatActivity {
 
         if(iTipoPedido==0)
         {
+            mCancelar.setVisibility(View.GONE);
             ref.child("Activos").child(key).addValueEventListener(returnListener());
         }
         if(iTipoPedido == 1)
@@ -83,6 +86,7 @@ public class MainActivity_pedido extends AppCompatActivity {
             ref.child("Activos").child(key).addValueEventListener(returnListener());
         }
         if(iTipoPedido == 2) {
+            mCancelar.setVisibility(View.GONE);
             mActualiza.setEnabled(false);
             mActualiza.setText("Pedido Finalizado");
             ref.child("Finalizados").child(key).addValueEventListener(returnListener());
@@ -152,6 +156,30 @@ public class MainActivity_pedido extends AppCompatActivity {
             mActualiza.setEnabled(false);
             mostrarDialogo("Apartado","Haz apartado este pedido",false);
         }
+    }
+
+    public void cancelarPedido(View view)
+    {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Cancelación de Pedido");
+        builder.setMessage("¿Estas seguro que deseas cancelar el pedido ?");
+        //builder.setPositiveButton("OK", null);
+
+        builder.setNeutralButton("Si", (dialog, which) -> {
+            ref.child("Activos").child(key).child("TrabajadorKey").setValue("");
+            Intent intent = new Intent(getApplicationContext(), MainActivity_List.class);
+            intent.putExtra("KeyTrabajador", keyTrabajador);
+            startActivity(intent);
+        });
+
+        builder.setNegativeButton("No", null);
+
+
+        builder.setInverseBackgroundForced(true);
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
     }
 
     @RequiresApi(api = Build.VERSION_CODES.O)

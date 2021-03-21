@@ -46,38 +46,42 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder>
     public void onBindViewHolder(@org.jetbrains.annotations.NotNull final ListAdapter.ViewHolder holder, final int position)
     {
         holder.binData(mData.get(position));
-        Date currentTime = Calendar.getInstance().getTime();
 
+        if(holder.iTipoPedido != 2) {
+            Date currentTime = Calendar.getInstance().getTime();
 
-        long lTimeMore = ((holder.iTiempoPedido*60)*1000);
-        if (holder.timer != null) {
-            holder.timer.cancel();
-        }
-        long timer =(holder.lHoraPedido+lTimeMore)-currentTime.getTime();
+            long lTimeMore = ((holder.iTiempoPedido * 60) * 1000);
+            if (holder.timer != null) {
+                holder.timer.cancel();
+            }
+            long timer = (holder.lHoraPedido + lTimeMore) - currentTime.getTime();
 
-        //timer = timer*1000;
+            //timer = timer*1000;
 
-        if(timer>0) {
-            holder.timer = new CountDownTimer(timer, 1000) {
-                public void onTick(long millisUntilFinished) {
+            if (timer > 0) {
+                holder.timer = new CountDownTimer(timer, 1000) {
+                    public void onTick(long millisUntilFinished) {
 
-                    int iSegundos= (int) (millisUntilFinished/1000);
-                    int hours = iSegundos / 3600;
-                    int minutes = (iSegundos % 3600) / 60;
-                    int seconds = iSegundos % 60;
+                        int iSegundos = (int) (millisUntilFinished / 1000);
+                        int hours = iSegundos / 3600;
+                        int minutes = (iSegundos % 3600) / 60;
+                        int seconds = iSegundos % 60;
 
-                    holder.hora.setText("Listo en: \n"+String.format("%02d:%02d:%02d", hours, minutes, seconds));
+                        holder.hora.setText("Listo en: \n" + String.format("%02d:%02d:%02d", hours, minutes, seconds));
 
-                }
+                    }
 
-                public void onFinish() {
-                    holder.hora.setText("AHORA");
-                }
-            }.start();
+                    public void onFinish() {
+                        holder.hora.setText("AHORA");
+                    }
+                }.start();
+            } else {
+                holder.hora.setText("AHORA");
+            }
         }
         else
         {
-            holder.hora.setText("AHORA");
+            holder.hora.setText("Finalizado");
         }
     }
 
@@ -91,6 +95,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder>
         TextView hora;
         int iTiempoPedido;
         long lHoraPedido;
+        int iTipoPedido;
         CountDownTimer timer;
 
         ViewHolder(View itemView)
@@ -109,6 +114,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ViewHolder>
             hora.setText("");
             iTiempoPedido=item.tiempoPedido;
             lHoraPedido=item.TiempoActualPedido;
+            iTipoPedido=item.tipoPedido;
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
